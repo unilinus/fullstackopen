@@ -1,5 +1,21 @@
 import { useState } from 'react'
 
+const getIndexOfBiggestValue = (values) => {
+  if (values.length == 0) {
+    return -1;
+  }
+
+  let index = 0;
+  let max = values[0];
+  for (let i = 1; i < values.length; i++) {
+    if (values[i] > max) {
+      max = values[i];
+      index = i;
+    }
+  }
+  return index;
+}
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -21,14 +37,20 @@ const App = () => {
     setVote(newVotes)
   }
 
-  return (
-    <div>
-      <p>{anecdotes[selected]}</p>
-      <p>has {votes[selected]} votes</p>
-      <button onClick={handleVotes}>vote</button>
-      <button onClick={() => setSelected(Math.floor(Math.random() * anecdotes.length))}>next anecdote</button>
-    </div>
-  )
+  let mostVotes = getIndexOfBiggestValue(votes)
+
+    return(
+      <div>
+        <h2>Anecdote of the day</h2>
+        <p>{anecdotes[selected]}</p>
+        <p>has {votes[selected]} votes</p>
+        <button onClick={handleVotes}>vote</button>
+        <button onClick={() => setSelected(Math.floor(Math.random() * anecdotes.length))}>next anecdote</button>
+        <h2>Anecdote with most votes</h2>
+        <p>{anecdotes[mostVotes]}</p>
+        <p>has {votes[mostVotes]} votes</p>
+      </div>
+    )
 }
 
 export default App
