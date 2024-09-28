@@ -71,7 +71,6 @@ const App = () => {
       number: newNumber
     }
     if (persons.map(person => person.name).indexOf(personObject.name) === -1) {
-
       personsService
         .create(personObject)
         .then(returnedPerson => {
@@ -80,9 +79,16 @@ const App = () => {
           setNewNumber('')
         })
     } else {
-      alert(`${newName} is already added to phonebook`)
-      setNewName('')
-      setNewNumber('')
+      const person = persons.find(p => p.name === newName)
+      alert(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      personsService
+        .update(person.id, personObject)
+        .then(returnedPerson => {
+          const personsUpdated = persons.filter(p => p.id !== person.id)
+          setPersons(personsUpdated.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
     }
   }
 
