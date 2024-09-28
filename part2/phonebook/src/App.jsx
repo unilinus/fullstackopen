@@ -65,7 +65,12 @@ const App = () => {
       number: newNumber
     }
     if (persons.map(person => person.name).indexOf(personObject.name) === -1) {
-      setPersons(persons.concat(personObject))
+      
+      axios
+      .post('http://localhost:3001/persons', personObject)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+    })
     } else {
       alert(`${newName} is already added to phonebook`)
     }
