@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import personsService from './services/persons'
 
 const Filter = (props) => (
   <form onSubmit={props.addPerson}>
@@ -65,17 +66,19 @@ const App = () => {
       number: newNumber
     }
     if (persons.map(person => person.name).indexOf(personObject.name) === -1) {
-      
-      axios
-      .post('http://localhost:3001/persons', personObject)
-      .then(response => {
-        setPersons(persons.concat(response.data))
-    })
+
+      personsService
+        .create(personObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
     } else {
       alert(`${newName} is already added to phonebook`)
+      setNewName('')
+      setNewNumber('')
     }
-    setNewName('')
-    setNewNumber('')
   }
 
   return (
@@ -89,7 +92,7 @@ const App = () => {
         addPerson={addPerson}
         newName={newName} handleNameChange={handleNameChange}
         newNumber={newNumber} handleNumberChange={handleNumberChange}
-        />
+      />
       <h2>Numbers</h2>
       <Persons personsToShow={personsToShow} />
     </div>
