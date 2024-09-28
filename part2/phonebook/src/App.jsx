@@ -24,9 +24,16 @@ const PersonForm = (props) => (
   </form>
 )
 
+const Person = (props) => (
+  <li key={props.person.id}>
+        {props.person.name} {props.person.number}
+        <button onClick={() => props.deletePerson(props.person)}>delete</button>
+      </li>
+)
+
 const Persons = (props) => (
   <div>
-    <ul>{props.personsToShow.map(person => <li key={person.id}>{person.name} {person.number}</li>)}
+    <ul>{props.personsToShow.map(person => <Person key={person.id} person={person} deletePerson={props.deletePerson}></Person>)}
     </ul>
   </div>
 )
@@ -38,15 +45,13 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('')
 
   useEffect(() => {
-    const eventHandler = response => {
-      setPersons(response.data)
-    }
-    const promise = axios.get('http://localhost:3001/persons')
-    promise.then(eventHandler)
-  }, [])
+    personsService.getAll().then(initialPersons => {
+      setPersons(initialPersons)
+    })
+}, [])
 
   const personsToShow = newFilter === '' ? persons : persons.filter(person => person.name.toLowerCase().includes(newFilter.toLowerCase().trim()))
-
+  
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -81,6 +86,15 @@ const App = () => {
     }
   }
 
+  const deletePerson = (person) => {
+    confirm(`Delete ${person.name} ?`)
+    personsService.remove(person.id)
+    .then(() => {
+      const personsUpdated = persons.filter(p => p.id !== person.id)
+      setPersons(personsUpdated)
+    })
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -94,7 +108,7 @@ const App = () => {
         newNumber={newNumber} handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} deletePerson={deletePerson} />
     </div>
   )
 }
