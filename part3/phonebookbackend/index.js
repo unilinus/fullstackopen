@@ -51,6 +51,35 @@ app.get('/api/persons', (request, response) => {
     response.status(204).end()
   })
 
+  const generateId = () => {
+    const rand = Math.floor(Math.random() * 100000000);
+    while(persons.map(p => Number(p.id)).find(n => n === rand)){
+        rand = Math.floor(Math.random() * 100000000);
+    }
+    return String(rand)
+  }
+
+  app.post('/api/persons', (request, response) => {
+    const body = request.body
+  
+    if (!body.name || !body.number) {
+      return response.status(400).json({ 
+        error: 'name missing' 
+      })
+    }
+  
+    const person = {
+        name: body.name,
+        number: body.number,
+        id: generateId(),
+    }
+
+    console.log(person)
+  
+    persons = persons.concat(person)
+    response.json(person)
+  })
+
   const PORT = 3001
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
